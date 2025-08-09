@@ -37,6 +37,13 @@ def get_uncategorizd(db: Session = Depends(database.get_db),
                                                             user_id=current_user.id).all()
     return uncategorized
 
+@router.get("/bookmarks", response_model=List[schemas.AllNoteOut])
+def get_bookmark(db: Session = Depends(database.get_db), 
+                 current_user = Depends(oauth2.get_current_user)):
+    
+    notes = db.query(models.Notes).filter_by(bookmark=True, user_id=current_user.id).all()
+    return notes
+
 @router.get("/{note_id}", response_model=schemas.NoteOut)
 def get_note(note_id: int, db: Session = Depends(database.get_db), 
                   current_user = Depends(oauth2.get_current_user)):
@@ -90,13 +97,6 @@ def toggle_bookmark(note_id: int, db: Session = Depends(database.get_db),
     db.commit()
     bookmarked_note = note_query.first()
     return bookmarked_note
-
-@router.get("/bookmarks", response_model=List[schemas.AllNoteOut])
-def get_bookmark(db: Session = Depends(database.get_db), 
-                 current_user = Depends(oauth2.get_current_user)):
-    
-    notes = db.query(models.Notes).filter_by(bookmark=True, user_id=current_user.id).all()
-    return notes
 
 @router.put("/category/{note_id}/{category_id}", response_model=schemas.CategorizedNote)
 def categorize(note_id: int, category_id: int, db: Session = Depends(database.get_db), 
