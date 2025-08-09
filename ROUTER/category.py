@@ -33,7 +33,7 @@ def get_category_note(category_id: int, db: Session = Depends(database.get_db),
                   current_user = Depends(oauth2.get_current_user)):
     
     category = db.query(models.NoteCategory).filter_by(id = category_id, 
-                                                      user_id = current_user.id).all()
+                                                      user_id = current_user.id).first()
     if not category:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
                             detail="Category doesn't exist") 
