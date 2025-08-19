@@ -6,8 +6,9 @@ from datetime import datetime, timedelta, timezone
 from config import settings
 import database, models, schemas
 
-Oauth2_scheme = OAuth2PasswordBearer(tokenUrl="user/login")
-refresh_Oauth2_scheme = OAuth2PasswordBearer(tokenUrl="user/refresh")
+Oauth2_scheme = OAuth2PasswordBearer(tokenUrl="user/login", scheme_name="OAuth2PasswordBearer")
+refresh_Oauth2_scheme = OAuth2PasswordBearer(tokenUrl="user/refresh", 
+                                             scheme_name="OAuth2PasswordBearerRefresh")
 
 
 def create_token(data: dict, expires_delta: timedelta, token_kind: str):

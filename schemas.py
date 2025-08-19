@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing import Optional
 
 class UserCreated(BaseModel):
@@ -36,6 +36,14 @@ class NoteCreated(BaseModel):
     title: str
     content: str
     category_id: Optional[int] = None
+
+    @field_validator("category_id")
+    def set_default_category(cls, value):
+        if value is None:
+            value = 1
+        elif value < 1:
+            raise ValueError("category_id cannot less than 1")
+        return value
     
 class NoteOut(BaseModel):
     id: int
@@ -84,6 +92,12 @@ class EditNote(BaseModel):
 class EditCategory(BaseModel):
     category_name: str
     
+    @field_validator("category_name")
+    def no_default_override(cls, value):
+        if value.strip().title() == "Uncategorized":
+            raise ValueError("Cannot name with default category name")
+        return value.title()
+    
 class Deletion(BaseModel):
     detail: str
 
@@ -92,6 +106,12 @@ class PasswordUpdate(BaseModel):
 
 class CategoryCreated(BaseModel):
     category_name: str
+    
+    @field_validator("category_name")
+    def no_default_override(cls, value):
+        if value.strip().title() == "Uncategorized":
+            raise ValueError("Cannot name with default category name")
+        return value.title()
     
 class ChangePassword(BaseModel):
     current_password: str = Field(..., min_length=8)

@@ -10,7 +10,8 @@ from ROUTER.category import router as category_router
 
 
 
-app = FastAPI()
+app = FastAPI(title= "NOTE APP", 
+              description="A REST API for note-keeping and documentation web service")
 
 app.add_middleware(
     CORSMiddleware,

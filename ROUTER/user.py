@@ -13,7 +13,9 @@ def create_account(user: schemas.UserCreated, db: Session = Depends(database.get
                             detail="An account with this email already exists")
     hashed_password = utils.hash(user.password)
     user.password = hashed_password
-    new_user = models.Users(**user.model_dump())
+    new_user = models.Users(**user.model_dump(),
+                            note_categories=[models.NoteCategory
+                                             (category_name="Uncategorized")])
     db.add(new_user)
     db.commit()
     db.refresh(new_user)

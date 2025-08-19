@@ -12,6 +12,10 @@ class Users(Base):
     password = Column(String, nullable=False)
     date_created = Column(DateTime(timezone=True), nullable=False, 
                           server_default=func.now())
+    
+    notes = relationship("Notes", back_populates="user", cascade="all, delete")
+    note_categories = relationship("NoteCategory", back_populates="user", 
+                                   cascade="all, delete")
    
 class NoteCategory(Base):
     __tablename__ = "note_categories"
@@ -20,7 +24,9 @@ class NoteCategory(Base):
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     category_name = Column(String, nullable=False)
     
-    note = relationship("Notes", back_populates="note_category")
+    notes = relationship("Notes", back_populates="note_category")
+    user = relationship("Users", back_populates="note_categories")
+
     
 
 class Notes(Base):
@@ -30,11 +36,12 @@ class Notes(Base):
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     title = Column(String, nullable=False)
     content = Column(String, nullable=False)
-    category_id = Column(Integer, ForeignKey("note_categories.id", ondelete="SET NULL"), 
-                         nullable=True)
+    category_id = Column(Integer, ForeignKey("note_categories.id", ondelete="SET NULL"), nullable=False,
+                         server_default= "1" )
     date_created=Column(DateTime(timezone=True), nullable=False, server_default=func.now())
     date_modified=Column(DateTime(timezone=True), nullable=False, server_default=func.now(), 
-                           server_onupdate=func.now())
+                         server_onupdate=func.now())
     bookmark = Column(Boolean, nullable=False, server_default="false")
     
-    note_category = relationship("NoteCategory", back_populates="note")
+    user = relationship("Users", back_populates="notes")
+    note_category = relationship("NoteCategory", back_populates="notes")
